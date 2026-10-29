@@ -52,16 +52,17 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.08);
       border-radius: 12px;
       padding: 10px;
+      position: relative;
     }
 
     .sidebar {
-      width: 320px;
+      width: 340px;
       background: var(--panel-bg);
       border-left: 2px solid var(--border);
       display: flex;
       flex-direction: column;
       padding: 16px;
-      gap: 16px;
+      gap: 14px;
       overflow-y: auto;
     }
 
@@ -93,21 +94,66 @@
     .btn-success { background: var(--turkuaz); color: #fff; }
     .btn-danger { background: #fff0f0; color: #d9534f; border-color: #f5c6cb; }
 
-    .form-selector { display: flex; gap: 8px; }
-    .form-btn {
-      flex: 1;
-      padding: 8px;
+    .form-tabs {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .tab-btn {
+      padding: 7px 6px;
       border: 1px solid var(--border);
       background: #fff;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.78rem;
       font-weight: 600;
+      text-align: center;
+      transition: all 0.15s;
     }
-    .form-btn.active {
+    .tab-btn.active {
       background: var(--cini-blue);
       color: #fff;
       border-color: var(--cini-blue);
+    }
+
+    /* Çap / Boyut Seçici Butonları */
+    .size-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-top: 6px;
+    }
+    .size-item-btn {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      background: #FAFAF7;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .size-item-btn span.tag {
+      font-size: 0.7rem;
+      color: #888;
+      font-weight: 400;
+    }
+    .size-item-btn:hover {
+      border-color: var(--turkuaz);
+      background: #F0F9F9;
+    }
+    .size-item-btn.active {
+      background: var(--turkuaz);
+      color: #fff;
+      border-color: var(--turkuaz);
+    }
+    .size-item-btn.active span.tag {
+      color: #E6F7F7;
     }
 
     /* Kütüphane Izgarası */
@@ -155,6 +201,8 @@
       border-radius: 30px;
       border: 1px solid var(--border);
       box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     /* Yönetici Paneli */
@@ -202,7 +250,7 @@
   <header>
     <div class="header-title">
       <h1>Çini Tasarım Atölyesi</h1>
-      <p>Geleneksel tahrir motifleriyle kendi kompozisyonunuzu hazırlayın</p>
+      <p id="olcuBilgiText">Zemin: Yuvarlak Tabak — 22 cm</p>
     </div>
     <div class="header-actions">
       <button class="btn btn-secondary" onclick="canvas.clear(); cizZemin();">Temizle</button>
@@ -229,10 +277,50 @@
 
     <div class="sidebar">
       <div>
-        <div class="section-title">Zemin Formu</div>
-        <div class="form-selector">
-          <button class="form-btn active" id="btnTabak" onclick="zeminDegistir('tabak')">Tabak (Yuvarlak)</button>
-          <button class="form-btn" id="btnKaro" onclick="zeminDegistir('karo')">Karo (Kare)</button>
+        <div class="section-title">1. Zemin ve Form Seçimi</div>
+        
+        <!-- Form Kategorileri -->
+        <div class="form-tabs">
+          <button class="tab-btn active" id="tab-tabak" onclick="kategoriSec('tabak')">Tabaklar</button>
+          <button class="tab-btn" id="tab-kare" onclick="kategoriSec('kare')">Kare Karolar</button>
+          <button class="tab-btn" id="tab-bordur" onclick="kategoriSec('bordur')">Bordür / Dikdörtgen</button>
+          <button class="tab-btn" id="tab-ozel" onclick="kategoriSec('ozel')">Özel Formlar</button>
+        </div>
+
+        <!-- 1. Yuvarlak Tabaklar -->
+        <div id="panel-tabak" class="size-grid">
+          <div class="size-item-btn" onclick="secimAyarla('tabak', {cap: 18, ad: '18 cm Tabak'})"><span>18 cm</span><span class="tag">Küçük Tabak</span></div>
+          <div class="size-item-btn" onclick="secimAyarla('tabak', {cap: 20, ad: '20 cm Tabak'})"><span>20 cm</span><span class="tag">Orta Tabak</span></div>
+          <div class="size-item-btn active" onclick="secimAyarla('tabak', {cap: 22, ad: '22 cm Tabak'})"><span>22 cm</span><span class="tag">Klasik Tabak</span></div>
+          <div class="size-item-btn" onclick="secimAyarla('tabak', {cap: 24, ad: '24 cm Tabak'})"><span>24 cm</span><span class="tag">Geniş Tabak</span></div>
+          <div class="size-item-btn" onclick="secimAyarla('tabak', {cap: 30, ad: '30 cm Tabak'})"><span>30 cm</span><span class="tag">Büyük Duvar Tabağı</span></div>
+        </div>
+
+        <!-- 2. Standart Kare Karolar -->
+        <div id="panel-kare" class="size-grid" style="display: none;">
+          <div class="size-item-btn active" onclick="secimAyarla('kare', {ebat: 10, ad: '10 × 10 cm Karo'})"><span>10 × 10 cm</span><span class="tag">Standart</span></div>
+          <div class="size-item-btn" onclick="secimAyarla('kare', {ebat: 15, ad: '15 × 15 cm Karo'})"><span>15 × 15 cm</span><span class="tag">Orta</span></div>
+          <div class="size-item-btn" onclick="secimAyarla('kare', {ebat: 20, ad: '20 × 20 cm Karo'})"><span>20 × 20 cm</span><span class="tag">En Yaygın & Klasik</span></div>
+          <div class="size-item-btn" onclick="secimAyarla('kare', {ebat: 25, ad: '25 × 25 cm Karo'})"><span>25 × 25 cm</span><span class="tag">Geniş Pano</span></div>
+          <div class="size-item-btn" onclick="secimAyarla('kare', {ebat: 30, ad: '30 × 30 cm Karo'})"><span>30 × 30 cm</span><span class="tag">Büyük Karo</span></div>
+          <div class="size-item-btn" onclick="secimAyarla('kare', {ebat: 40, ad: '40 × 40 cm Karo'})"><span>40 × 40 cm</span><span class="tag">Anıtsal Pano</span></div>
+        </div>
+
+        <!-- 3. Dikdörtgen ve Bordür Karoları -->
+        <div id="panel-bordur" class="size-grid" style="display: none;">
+          <div class="size-item-btn active" onclick="secimAyarla('dikdortgen', {en: 5, boy: 20, ad: '5 × 20 cm Çıta'})"><span>5 × 20 cm</span><span class="tag">Çıta & İnce Bordür</span></div>
+          <div class="size-item-btn" onclick="secimAyarla('dikdortgen', {en: 7.5, boy: 20, ad: '7.5 × 20 cm Bordür'})"><span>7.5 × 20 cm</span><span class="tag">Geleneksel Bordür</span></div>
+          <div class="size-item-btn" onclick="secimAyarla('dikdortgen', {en: 10, boy: 20, ad: '10 × 20 cm Dikdörtgen'})"><span>10 × 20 cm</span><span class="tag">Geniş Kuşak</span></div>
+          <div class="size-item-btn" onclick="secimAyarla('dikdortgen', {en: 20, boy: 25, ad: '20 × 25 cm Pano'})"><span>20 × 25 cm</span><span class="tag">Dikey Pano</span></div>
+        </div>
+
+        <!-- 4. Özel Formlar (Altıgen, Üçgen, Selçuklu Yıldızı) -->
+        <div id="panel-ozel" class="size-grid" style="display: none;">
+          <div class="size-item-btn active" onclick="secimAyarla('altigen', {kenar: 10, ad: 'Altıgen (10 cm kenar)'})"><span>Altıgen – Kenar 10 cm</span><span class="tag">Hexagon</span></div>
+          <div class="size-item-btn" onclick="secimAyarla('altigen', {kenar: 12, ad: 'Altıgen (12 cm kenar)'})"><span>Altıgen – Kenar 12 cm</span><span class="tag">Hexagon</span></div>
+          <div class="size-item-btn" onclick="secimAyarla('altigen', {kenar: 15, ad: 'Altıgen (15 cm kenar)'})"><span>Altıgen – Kenar 15 cm</span><span class="tag">Hexagon</span></div>
+          <div class="size-item-btn" onclick="secimAyarla('ucgen', {kenar: 15, ad: 'Üçgen / Derece Karosu'})"><span>Üçgen (Derece Karosu)</span><span class="tag">Tamamlayıcı</span></div>
+          <div class="size-item-btn" onclick="secimAyarla('yildiz', {ebat: 20, ad: '8 Kollu Selçuklu Yıldızı'})"><span>8 Kollu Selçuklu Yıldızı</span><span class="tag">Geometrik Geçme</span></div>
         </div>
       </div>
 
@@ -249,9 +337,9 @@
       </div>
 
       <div>
-        <div class="section-title">Motif Kütüphanesi</div>
+        <div class="section-title">2. Motif Kütüphanesi</div>
         <div class="motifs-grid" id="kutuphane">
-          <!-- Supabase'deki motifler buraya otomatik yüklenecek -->
+          <!-- Supabase motifleri buraya listelenir -->
         </div>
       </div>
     </div>
@@ -263,7 +351,7 @@
     // ==========================================
     const SUPABASE_URL = 'https://hscgpgrtxlzfrlazufnp.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_RO1sux4DlAaNiF5yNwFuJg_IewoTe6u';
-    const ADMIN_SIFRE = '1234'; // Yönetici şifreniz
+    const ADMIN_SIFRE = '1234';
 
     let _supabase = null;
     if (SUPABASE_URL.indexOf('BURAYA_') === -1) {
@@ -271,37 +359,138 @@
     }
 
     const canvas = new fabric.Canvas('ciniCanvas', { selection: true, preserveObjectStacking: true });
-    let aktifZemin = 'tabak';
+    
+    // Zemin Durumu
+    let aktifForm = 'tabak'; // 'tabak', 'kare', 'dikdortgen', 'altigen', 'ucgen', 'yildiz'
+    let formDetay = { cap: 22, ad: '22 cm Tabak' };
 
-    function cizZemin() {
-      const center = 275;
-      if (aktifZemin === 'tabak') {
-        const outerCircle = new fabric.Circle({
-          left: center, top: center, originX: 'center', originY: 'center',
-          radius: 250, fill: '#FFFFFF', stroke: '#1C3D5A', strokeWidth: 4,
-          selectable: false, evented: false, id: 'zemin'
-        });
-        const borderBand = new fabric.Circle({
-          left: center, top: center, originX: 'center', originY: 'center',
-          radius: 200, fill: 'transparent', stroke: '#E5E0D5', strokeWidth: 1.5,
-          strokeDashArray: [5, 5], selectable: false, evented: false, id: 'zemin'
-        });
-        canvas.add(outerCircle, borderBand);
-      } else {
-        const square = new fabric.Rect({
-          left: center, top: center, originX: 'center', originY: 'center',
-          width: 480, height: 480, fill: '#FFFFFF', stroke: '#1C3D5A', strokeWidth: 4,
-          selectable: false, evented: false, id: 'zemin'
-        });
-        canvas.add(square);
-      }
-      canvas.sendToBack(canvas.getObjects().find(o => o.id === 'zemin'));
+    function kategoriSec(kat) {
+      ['tabak', 'kare', 'bordur', 'ozel'].forEach(k => {
+        document.getElementById(`tab-${k}`).classList.toggle('active', k === kat);
+        document.getElementById(`panel-${k}`).style.display = (k === kat ? 'flex' : 'none');
+      });
+
+      // İlk butonu varsayılan seç
+      const ilkBtn = document.querySelector(`#panel-${kat} .size-item-btn`);
+      if (ilkBtn) ilkBtn.click();
     }
 
-    function zeminDegistir(tip) {
-      aktifZemin = tip;
-      document.getElementById('btnTabak').classList.toggle('active', tip === 'tabak');
-      document.getElementById('btnKaro').classList.toggle('active', tip === 'karo');
+    function secimAyarla(formTipi, detay) {
+      aktifForm = formTipi;
+      formDetay = detay;
+
+      // Aktif buton stilini güncelle
+      const panels = ['tabak', 'kare', 'bordur', 'ozel'];
+      panels.forEach(p => {
+        const btns = document.querySelectorAll(`#panel-${p} .size-item-btn`);
+        btns.forEach(b => {
+          if (b.innerText.includes(detay.ad.split(' ')[0])) {
+            b.classList.add('active');
+          } else {
+            b.classList.remove('active');
+          }
+        });
+      });
+
+      yenidenCiz();
+    }
+
+    // Geometrik Zemin Çizimleri
+    function cizZemin() {
+      const center = 275;
+      document.getElementById('olcuBilgiText').innerText = `Zemin: ${formDetay.ad}`;
+
+      // İnce kılavuz artı ekseni
+      const crossH = new fabric.Line([center - 12, center, center + 12, center], { stroke: '#D0C8B8', strokeWidth: 1, selectable: false, evented: false, id: 'zemin' });
+      const crossV = new fabric.Line([center, center - 12, center, center + 12], { stroke: '#D0C8B8', strokeWidth: 1, selectable: false, evented: false, id: 'zemin' });
+
+      if (aktifForm === 'tabak') {
+        const radius = (formDetay.cap / 30) * 250;
+        const outer = new fabric.Circle({
+          left: center, top: center, originX: 'center', originY: 'center',
+          radius: radius, fill: '#FFFFFF', stroke: '#1C3D5A', strokeWidth: 3.5,
+          selectable: false, evented: false, id: 'zemin'
+        });
+        const bordur = new fabric.Circle({
+          left: center, top: center, originX: 'center', originY: 'center',
+          radius: radius * 0.78, fill: 'transparent', stroke: '#E2DDD2', strokeWidth: 1.5,
+          strokeDashArray: [4, 4], selectable: false, evented: false, id: 'zemin'
+        });
+        canvas.add(outer, bordur, crossH, crossV);
+
+      } else if (aktifForm === 'kare') {
+        const size = (formDetay.ebat / 40) * 480;
+        const square = new fabric.Rect({
+          left: center, top: center, originX: 'center', originY: 'center',
+          width: size, height: size, fill: '#FFFFFF', stroke: '#1C3D5A', strokeWidth: 3.5,
+          selectable: false, evented: false, id: 'zemin'
+        });
+        canvas.add(square, crossH, crossV);
+
+      } else if (aktifForm === 'dikdortgen') {
+        // En ve boy oranına göre tuvale sığdır
+        const scale = 22; // px per cm
+        const w = formDetay.boy * scale;
+        const h = formDetay.en * scale;
+        const rect = new fabric.Rect({
+          left: center, top: center, originX: 'center', originY: 'center',
+          width: w, height: h, fill: '#FFFFFF', stroke: '#1C3D5A', strokeWidth: 3.5,
+          selectable: false, evented: false, id: 'zemin'
+        });
+        canvas.add(rect, crossH, crossV);
+
+      } else if (aktifForm === 'altigen') {
+        // Düzgün altıgen noktaları
+        const r = (formDetay.kenar / 15) * 240;
+        const points = [];
+        for (let i = 0; i < 6; i++) {
+          const angle = (i * 60) * Math.PI / 180;
+          points.push({ x: center + r * Math.cos(angle), y: center + r * Math.sin(angle) });
+        }
+        const hex = new fabric.Polygon(points, {
+          fill: '#FFFFFF', stroke: '#1C3D5A', strokeWidth: 3.5,
+          selectable: false, evented: false, id: 'zemin'
+        });
+        canvas.add(hex, crossH, crossV);
+
+      } else if (aktifForm === 'ucgen') {
+        // Eşkenar üçgen
+        const h = 420;
+        const w = 480;
+        const points = [
+          { x: center, y: center - (h * 2/3) },
+          { x: center + (w / 2), y: center + (h / 3) },
+          { x: center - (w / 2), y: center + (h / 3) }
+        ];
+        const tri = new fabric.Polygon(points, {
+          fill: '#FFFFFF', stroke: '#1C3D5A', strokeWidth: 3.5,
+          selectable: false, evented: false, id: 'zemin'
+        });
+        canvas.add(tri, crossH, crossV);
+
+      } else if (aktifForm === 'yildiz') {
+        // 8 Kollu Selçuklu Yıldızı (İki kare iç içe 45 derece dönük)
+        const s = 340;
+        const k1 = new fabric.Rect({
+          left: center, top: center, originX: 'center', originY: 'center',
+          width: s, height: s, fill: '#FFFFFF', stroke: '#1C3D5A', strokeWidth: 3,
+          selectable: false, evented: false, id: 'zemin'
+        });
+        const k2 = new fabric.Rect({
+          left: center, top: center, originX: 'center', originY: 'center',
+          width: s, height: s, fill: '#FFFFFF', stroke: '#1C3D5A', strokeWidth: 3, angle: 45,
+          selectable: false, evented: false, id: 'zemin'
+        });
+        canvas.add(k1, k2, crossH, crossV);
+      }
+
+      // Zemin elemanlarını arkaya at
+      canvas.getObjects().forEach(o => {
+        if (o.id === 'zemin') canvas.sendToBack(o);
+      });
+    }
+
+    function yenidenCiz() {
       const objeler = canvas.getObjects().filter(o => o.id !== 'zemin');
       canvas.clear();
       cizZemin();
@@ -311,7 +500,7 @@
 
     function motifiTuvaleEkle(url) {
       fabric.Image.fromURL(url, function(img) {
-        img.scaleToWidth(140);
+        img.scaleToWidth(130);
         img.set({
           left: 275, top: 275, originX: 'center', originY: 'center',
           cornerColor: '#0E7C7B', borderColor: '#0E7C7B', cornerSize: 10, transparentCorners: false
@@ -322,14 +511,12 @@
       }, { crossOrigin: 'anonymous' });
     }
 
-    // Dosya seçilince adını kutuda gösterme
     document.getElementById('adminFile').addEventListener('change', function(e) {
       if (e.target.files.length > 0) {
         document.getElementById('dosyaAdiText').innerText = e.target.files[0].name;
       }
     });
 
-    // Yönetici Girişi
     function yoneticiGiris() {
       const girilen = prompt("Yönetici Şifrenizi Giriniz:");
       if (girilen === ADMIN_SIFRE) {
@@ -343,45 +530,28 @@
       document.getElementById('adminPanel').style.display = 'none';
     }
 
-    // BULUTA MOTİF YÜKLEME
     async function bulutaMotifYukle() {
-      if (!_supabase) {
-        alert("Lütfen önce Supabase URL ve Key bilgilerinizi kontrol edin!");
-        return;
-      }
+      if (!_supabase) { alert("Supabase bağlantısı henüz hazır değil!"); return; }
       const ad = document.getElementById('motifAdiInput').value.trim();
       const fileInput = document.getElementById('adminFile');
       const file = fileInput.files[0];
-
-      if (!file) {
-        alert("Lütfen bir görsel dosyası seçin.");
-        return;
-      }
+      if (!file) { alert("Lütfen bir görsel seçin."); return; }
 
       const dosyaAdi = Date.now() + '_' + (ad ? ad.replace(/\s+/g, '_') : 'motif') + '.png';
-
-      // 1. Storage'a (buluta) yükle
       const { data, error } = await _supabase.storage.from('motifler').upload(dosyaAdi, file);
 
-      if (error) {
-        alert("Yükleme hatası: " + error.message);
-        return;
-      }
+      if (error) { alert("Yükleme hatası: " + error.message); return; }
 
       alert("Motif başarıyla buluta yüklendi!");
       document.getElementById('motifAdiInput').value = '';
       document.getElementById('dosyaAdiText').innerText = '+ Saydam Tahrir Görseli Seç';
       fileInput.value = '';
-      
-      // Kütüphaneyi yeniden getir
       buluttanMotifleriYukle();
     }
 
-    // BULUTTAKİ MOTİFLERİ OTOMATİK GETİRME
     async function buluttanMotifleriYukle() {
       const grid = document.getElementById('kutuphane');
       grid.innerHTML = '';
-
       if (!_supabase) return;
 
       const { data, error } = await _supabase.storage.from('motifler').list('', { limit: 100 });
@@ -391,7 +561,6 @@
         if (item.name.endsWith('.png') || item.name.endsWith('.svg')) {
           const { data: publicUrlData } = _supabase.storage.from('motifler').getPublicUrl(item.name);
           const url = publicUrlData.publicUrl;
-          
           let temizAd = item.name.replace(/^\d+_/, '').replace(/\.(png|svg)$/, '').replace(/_/g, ' ');
 
           const card = document.createElement('div');
@@ -403,7 +572,6 @@
       });
     }
 
-    // Tuval İşlemleri
     function dondur(aci) {
       const active = canvas.getActiveObject();
       if (!active) return;
@@ -457,7 +625,8 @@
       canvas.discardActiveObject();
       canvas.renderAll();
       const link = document.createElement('a');
-      link.download = 'cini-baski-sablonu.png';
+      const dosyaAdi = `cini-${formDetay.ad.toLowerCase().replace(/[^a-z0-9]/g, '-')}-sablon.png`;
+      link.download = dosyaAdi;
       link.href = canvas.toDataURL({ format: 'png', multiplier: 2 });
       link.click();
     }
