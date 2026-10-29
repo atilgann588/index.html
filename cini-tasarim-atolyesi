@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geleneksel Çini Desen Tasarım Atölyesi</title>
+  <!-- Fabric.js Tuval Motoru -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+  <!-- Supabase Bulut Veritabanı Kütüphanesi -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg-cream: #F8F6F0;
+      --panel-bg: #FFFFFF;
+      --cini-blue: #1C3D5A;
+      --turkuaz: #0E7C7B;
+      --border: #DCD8CD;
+      --text: #2C3E50;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body { background: var(--bg-cream); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+    header {
+      background: var(--panel-bg);
+      border-bottom: 2px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header-title h1 { font-size: 1.25rem; font-weight: 700; color: var(--cini-blue); }
+    .header-title p { font-size: 0.85rem; color: #666; }
+    .header-actions { display: flex; gap: 10px; align-items: center; }
+
+    .main-workspace {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 65px);
+      overflow: hidden;
+    }
+
+    .canvas-container-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .canvas-card {
+      background: #FFF;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      border-radius: 12px;
+      padding: 10px;
+    }
+
+    .sidebar {
+      width: 320px;
+      background: var(--panel-bg);
+      border-left: 2px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      gap: 16px;
+      overflow-y: auto;
+    }
+
+    .section-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--cini-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--cini-blue); color: #fff; }
+    .btn-secondary { background: #f0ede4; color: var(--text); border-color: var(--border); }
+    .btn-secondary:hover { background: #e3ded4; }
+    .btn-success { background: var(--turkuaz); color: #fff; }
+    .btn-danger { background: #fff0f0; color: #d9534f; border-color: #f5c6cb; }
+
+    .form-selector { display: flex; gap: 8px; }
+    .form-btn {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .form-btn.active {
+      background: var(--cini-blue);
+      color: #fff;
+      border-color: var(--cini-blue);
+    }
+
+    /* Kütüphane Izgarası */
+    .motifs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .motif-thumb-card {
+      background: #fcfbf9;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .motif-thumb-card:hover {
+      border-color: var(--cini-blue);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .motif-thumb-card img {
+      width: 100%;
+      height: 85px;
+      object-fit: contain;
+    }
+    .motif-thumb-card span {
+      font-size: 0.75rem;
+      margin-top: 6px;
+      font-weight: 600;
+      color: #555;
+      text-align: center;
+      word-break: break-word;
+    }
+
+    .toolbar-bottom {
+      margin-top: 15px;
+      display: flex;
+      gap: 8px;
+      background: #fff;
+      padding: 8px 16px;
+      border-radius: 30px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    /* Yönetici Paneli */
+    #adminPanel {
+      display: none;
+      background: #FFFDF0;
+      border: 1.5px dashed #D4A373;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 8px;
+    }
+    .admin-input {
+      width: 100%;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.8rem;
+      margin-bottom: 8px;
+    }
+    .admin-upload-zone {
+      border: 1px dashed var(--turkuaz);
+      background: #fff;
+      border-radius: 6px;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .admin-upload-zone input { display: none; }
+    .admin-upload-zone span { font-size: 0.8rem; font-weight: 600; color: var(--turkuaz); }
+    .admin-lock-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.1rem;
+      opacity: 0.3;
+      transition: opacity 0.2s;
+    }
+    .admin-lock-btn:hover { opacity: 0.8; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-title">
+      <h1>Çini Tasarım Atölyesi</h1>
+      <p>Geleneksel tahrir motifleriyle kendi kompozisyonunuzu hazırlayın</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" onclick="canvas.clear(); cizZemin();">Temizle</button>
+      <button class="btn btn-success" onclick="sablonIndir()">Şablonu İndir (Baskı İçin)</button>
+      <button class="admin-lock-btn" title="Yönetici Girişi" onclick="yoneticiGiris()">🔒</button>
+    </div>
+  </header>
+
+  <div class="main-workspace">
+    <div class="canvas-container-wrap">
+      <div class="canvas-card">
+        <canvas id="ciniCanvas" width="550" height="550"></canvas>
+      </div>
+
+      <div class="toolbar-bottom">
+        <button class="btn btn-secondary" onclick="dondur(45)">↻ 45° Döndür</button>
+        <button class="btn btn-secondary" onclick="aynala()">↔ Aynala</button>
+        <button class="btn btn-secondary" onclick="katman('up')">Öne Getir</button>
+        <button class="btn btn-secondary" onclick="katman('down')">Arkaya Gönder</button>
+        <button class="btn btn-secondary" onclick="dortluSimetri()">4'lü Çark Simetrisi</button>
+        <button class="btn btn-danger" onclick="silSecili()">Sil</button>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <div>
+        <div class="section-title">Zemin Formu</div>
+        <div class="form-selector">
+          <button class="form-btn active" id="btnTabak" onclick="zeminDegistir('tabak')">Tabak (Yuvarlak)</button>
+          <button class="form-btn" id="btnKaro" onclick="zeminDegistir('karo')">Karo (Kare)</button>
+        </div>
+      </div>
+
+      <!-- Yönetici Paneli -->
+      <div id="adminPanel">
+        <div class="section-title" style="color: #936639;">Yönetici Paneli (Buluta Ekle)</div>
+        <input type="text" id="motifAdiInput" class="admin-input" placeholder="Motif Adı (Örn: Çift Karanfil)">
+        <label class="admin-upload-zone">
+          <input type="file" id="adminFile" accept="image/png, image/svg+xml">
+          <span id="dosyaAdiText">+ Saydam Tahrir Görseli Seç</span>
+        </label>
+        <button class="btn btn-primary" style="width: 100%; margin-bottom: 6px;" onclick="bulutaMotifYukle()">Buluta Kaydet ve Yayınla</button>
+        <button class="btn btn-secondary" style="width: 100%; font-size: 0.75rem;" onclick="yoneticiCikis()">Paneli Kapat</button>
+      </div>
+
+      <div>
+        <div class="section-title">Motif Kütüphanesi</div>
+        <div class="motifs-grid" id="kutuphane">
+          <!-- Supabase'deki motifler buraya otomatik yüklenecek -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // SUPABASE BULUT BAĞLANTISI
+    // ==========================================
+    const SUPABASE_URL = 'https://hscgpgrtxlzfrlazufnp.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_RO1sux4DlAaNiF5yNwFuJg_IewoTe6u';
+    const ADMIN_SIFRE = '1234'; // Yönetici şifreniz
+
+    let _supabase = null;
+    if (SUPABASE_URL.indexOf('BURAYA_') === -1) {
+      _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+    const canvas = new fabric.Canvas('ciniCanvas', { selection: true, preserveObjectStacking: true });
+    let aktifZemin = 'tabak';
+
+    function cizZemin() {
+      const center = 275;
+      if (aktifZemin === 'tabak') {
+        const outerCircle = new fabric.Circle({
+          left: center, top: center, originX: 'center', originY: 'center',
+          radius: 250, fill: '#FFFFFF', stroke: '#1C3D5A', strokeWidth: 4,
+          selectable: false, evented: false, id: 'zemin'
+        });
+        const borderBand = new fabric.Circle({
+          left: center, top: center, originX: 'center', originY: 'center',
+          radius: 200, fill: 'transparent', stroke: '#E5E0D5', strokeWidth: 1.5,
+          strokeDashArray: [5, 5], selectable: false, evented: false, id: 'zemin'
+        });
+        canvas.add(outerCircle, borderBand);
+      } else {
+        const square = new fabric.Rect({
+          left: center, top: center, originX: 'center', originY: 'center',
+          width: 480, height: 480, fill: '#FFFFFF', stroke: '#1C3D5A', strokeWidth: 4,
+          selectable: false, evented: false, id: 'zemin'
+        });
+        canvas.add(square);
+      }
+      canvas.sendToBack(canvas.getObjects().find(o => o.id === 'zemin'));
+    }
+
+    function zeminDegistir(tip) {
+      aktifZemin = tip;
+      document.getElementById('btnTabak').classList.toggle('active', tip === 'tabak');
+      document.getElementById('btnKaro').classList.toggle('active', tip === 'karo');
+      const objeler = canvas.getObjects().filter(o => o.id !== 'zemin');
+      canvas.clear();
+      cizZemin();
+      objeler.forEach(obj => canvas.add(obj));
+      canvas.renderAll();
+    }
+
+    function motifiTuvaleEkle(url) {
+      fabric.Image.fromURL(url, function(img) {
+        img.scaleToWidth(140);
+        img.set({
+          left: 275, top: 275, originX: 'center', originY: 'center',
+          cornerColor: '#0E7C7B', borderColor: '#0E7C7B', cornerSize: 10, transparentCorners: false
+        });
+        canvas.add(img);
+        canvas.setActiveObject(img);
+        canvas.renderAll();
+      }, { crossOrigin: 'anonymous' });
+    }
+
+    // Dosya seçilince adını kutuda gösterme
+    document.getElementById('adminFile').addEventListener('change', function(e) {
+      if (e.target.files.length > 0) {
+        document.getElementById('dosyaAdiText').innerText = e.target.files[0].name;
+      }
+    });
+
+    // Yönetici Girişi
+    function yoneticiGiris() {
+      const girilen = prompt("Yönetici Şifrenizi Giriniz:");
+      if (girilen === ADMIN_SIFRE) {
+        document.getElementById('adminPanel').style.display = 'block';
+      } else if (girilen !== null) {
+        alert("Hatalı şifre!");
+      }
+    }
+
+    function yoneticiCikis() {
+      document.getElementById('adminPanel').style.display = 'none';
+    }
+
+    // BULUTA MOTİF YÜKLEME
+    async function bulutaMotifYukle() {
+      if (!_supabase) {
+        alert("Lütfen önce Supabase URL ve Key bilgilerinizi kontrol edin!");
+        return;
+      }
+      const ad = document.getElementById('motifAdiInput').value.trim();
+      const fileInput = document.getElementById('adminFile');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert("Lütfen bir görsel dosyası seçin.");
+        return;
+      }
+
+      const dosyaAdi = Date.now() + '_' + (ad ? ad.replace(/\s+/g, '_') : 'motif') + '.png';
+
+      // 1. Storage'a (buluta) yükle
+      const { data, error } = await _supabase.storage.from('motifler').upload(dosyaAdi, file);
+
+      if (error) {
+        alert("Yükleme hatası: " + error.message);
+        return;
+      }
+
+      alert("Motif başarıyla buluta yüklendi!");
+      document.getElementById('motifAdiInput').value = '';
+      document.getElementById('dosyaAdiText').innerText = '+ Saydam Tahrir Görseli Seç';
+      fileInput.value = '';
+      
+      // Kütüphaneyi yeniden getir
+      buluttanMotifleriYukle();
+    }
+
+    // BULUTTAKİ MOTİFLERİ OTOMATİK GETİRME
+    async function buluttanMotifleriYukle() {
+      const grid = document.getElementById('kutuphane');
+      grid.innerHTML = '';
+
+      if (!_supabase) return;
+
+      const { data, error } = await _supabase.storage.from('motifler').list('', { limit: 100 });
+      if (error || !data) return;
+
+      data.forEach(item => {
+        if (item.name.endsWith('.png') || item.name.endsWith('.svg')) {
+          const { data: publicUrlData } = _supabase.storage.from('motifler').getPublicUrl(item.name);
+          const url = publicUrlData.publicUrl;
+          
+          let temizAd = item.name.replace(/^\d+_/, '').replace(/\.(png|svg)$/, '').replace(/_/g, ' ');
+
+          const card = document.createElement('div');
+          card.className = 'motif-thumb-card';
+          card.onclick = () => motifiTuvaleEkle(url);
+          card.innerHTML = `<img src="${url}" alt="${temizAd}"><span>${temizAd}</span>`;
+          grid.appendChild(card);
+        }
+      });
+    }
+
+    // Tuval İşlemleri
+    function dondur(aci) {
+      const active = canvas.getActiveObject();
+      if (!active) return;
+      active.rotate((active.angle + aci) % 360);
+      canvas.renderAll();
+    }
+
+    function aynala() {
+      const active = canvas.getActiveObject();
+      if (!active) return;
+      active.set('flipX', !active.flipX);
+      canvas.renderAll();
+    }
+
+    function katman(yon) {
+      const active = canvas.getActiveObject();
+      if (!active) return;
+      if (yon === 'up') canvas.bringForward(active);
+      if (yon === 'down') canvas.sendBackwards(active);
+      canvas.renderAll();
+    }
+
+    function silSecili() {
+      const active = canvas.getActiveObject();
+      if (active && active.id !== 'zemin') canvas.remove(active);
+    }
+
+    function dortluSimetri() {
+      const active = canvas.getActiveObject();
+      if (!active || active.id === 'zemin') return;
+      const center = 275;
+      const dx = active.left - center;
+      const dy = active.top - center;
+      const currentAngle = active.angle;
+
+      for (let i = 1; i < 4; i++) {
+        active.clone(function(cloned) {
+          const rad = (i * 90 * Math.PI) / 180;
+          cloned.set({
+            left: center + (dx * Math.cos(rad) - dy * Math.sin(rad)),
+            top: center + (dx * Math.sin(rad) + dy * Math.cos(rad)),
+            angle: (currentAngle + i * 90) % 360
+          });
+          canvas.add(cloned);
+        });
+      }
+      canvas.renderAll();
+    }
+
+    function sablonIndir() {
+      canvas.discardActiveObject();
+      canvas.renderAll();
+      const link = document.createElement('a');
+      link.download = 'cini-baski-sablonu.png';
+      link.href = canvas.toDataURL({ format: 'png', multiplier: 2 });
+      link.click();
+    }
+
+    cizZemin();
+    buluttanMotifleriYukle();
+  </script>
+</body>
+</html>
