@@ -38,22 +38,29 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 44px;
-      height: 44px;
+      width: 50px;
+      height: 50px;
       cursor: pointer;
       transition: transform 0.2s ease;
+      flex-shrink: 0;
     }
     .logo-container:hover {
-      transform: scale(1.05);
+      transform: scale(1.04);
+    }
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     .brand-text h1 {
-      font-size: 1.3rem;
+      font-size: 1.35rem;
       font-weight: 800;
       letter-spacing: 1px;
       color: var(--cini-blue);
       display: flex;
       align-items: center;
       gap: 6px;
+      line-height: 1.2;
     }
     .brand-text h1 span.brand-red {
       color: var(--iznik-red);
@@ -61,7 +68,7 @@
     .brand-text p {
       font-size: 0.8rem;
       color: #666;
-      margin-top: 2px;
+      margin-top: 3px;
       font-weight: 500;
     }
     .header-actions { display: flex; gap: 10px; align-items: center; }
@@ -69,7 +76,7 @@
     .main-workspace {
       display: flex;
       flex: 1;
-      height: calc(100vh - 65px);
+      height: calc(100vh - 68px);
       overflow: hidden;
     }
 
@@ -283,39 +290,39 @@
 
   <header>
     <div class="header-brand">
-      <!-- Özgün NT Çini Amblemi (SVG) -->
+      <!-- Özgün NT Çini ve Tahrirli Lale Amblemi -->
       <div class="logo-container" title="Nicaea Tiles">
         <svg width="48" height="48" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Geleneksel Çini Karo Formu & Fırça İzi Bordür -->
-  <rect x="6" y="6" width="108" height="108" rx="16" fill="#FDFBF7" stroke="#1C3D5A" stroke-width="2"/>
-  <rect x="12" y="12" width="96" height="96" rx="12" fill="none" stroke="#C8232C" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.7"/>
-  
-  <!-- "N" Harfi: Tahrirli Lale ve Saz Kıvrımı (Kobalt Mavisi) -->
-  <!-- N sol dik sap / lale gövdesi (fırça ucu kıvrımıyla) -->
-  <path d="M26 88C27 75 25 45 28 32C29 27 33 24 35 27C37 31 32 40 31 52C30 64 32 82 26 88Z" fill="#1C3D5A"/>
-  <!-- N çapraz dalı ve lale yaprağı bağı -->
-  <path d="M28 36C33 46 48 70 56 86C58 89 61 88 60 84C57 74 54 58 53 45" stroke="#1C3D5A" stroke-width="3.2" stroke-linecap="round"/>
-  <!-- N sağ kanat: Yukarı doğru açılan tahrirli narin lale yaprağı -->
-  <path d="M53 84C55 70 56 46 54 36C53 30 57 26 60 29C64 33 60 48 59 62C58 72 60 81 54 86" fill="#1C3D5A"/>
-  <path d="M60 29C64 24 69 22 72 26C74 30 69 36 63 39" stroke="#1C3D5A" stroke-width="2" stroke-linecap="round"/>
+          <!-- Geleneksel Çini Karo Sınırı -->
+          <rect x="6" y="6" width="108" height="108" rx="16" fill="#FDFBF7" stroke="#1C3D5A" stroke-width="2.5"/>
+          <rect x="12" y="12" width="96" height="96" rx="12" fill="none" stroke="#C8232C" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.65"/>
+          
+          <!-- "N" Harfi: Tahrirli Çini Sazı & Lale Dalı (Kobalt Mavisi) -->
+          <path d="M26 88C27 75 25 45 28 32C29 27 33 24 35 27C37 31 32 40 31 52C30 64 32 82 26 88Z" fill="#1C3D5A"/>
+          <path d="M28 36C33 46 48 70 56 86C58 89 61 88 60 84C57 74 54 58 53 45" stroke="#1C3D5A" stroke-width="3.2" stroke-linecap="round"/>
+          <path d="M53 84C55 70 56 46 54 36C53 30 57 26 60 29C64 33 60 48 59 62C58 72 60 81 54 86" fill="#1C3D5A"/>
+          <path d="M60 29C64 24 69 22 72 26C74 30 69 36 63 39" stroke="#1C3D5A" stroke-width="2" stroke-linecap="round"/>
 
-  <!-- "T" Harfi: Mercan Kırmızısı Çini Lalesi ve Tahrirli Dalı -->
-  <!-- T dikey gövde / tahrir sapı -->
-  <path d="M85 88C84 75 84 55 85 40" stroke="#1C3D5A" stroke-width="3" stroke-linecap="round"/>
-  <!-- T üst taç / Tam bir İznik lalesi açılışı (Mercan Kırmızısı Tahrir & Dolgu) -->
-  <!-- Sol taç yaprağı (T'nin sol yatay kolunu oluşturur) -->
-  <path d="M84 44C78 43 66 42 62 36C59 32 63 28 68 29C74 31 80 37 84 43Z" fill="#C8232C" stroke="#8E141A" stroke-width="0.8"/>
-  <!-- Sağ taç yaprağı (T'nin sağ yatay kolunu oluşturur) -->
-  <path d="M86 44C92 43 104 42 108 36C111 32 107 28 102 29C96 31 90 37 86 43Z" fill="#C8232C" stroke="#8E141A" stroke-width="0.8"/>
-  <!-- Lalenin sivri orta ucu (Klasik İznik hançer ucu lale motifi) -->
-  <path d="M81 43C82 35 84 22 85 18C86 22 88 35 89 43C86 45 84 45 81 43Z" fill="#C8232C" stroke="#8E141A" stroke-width="0.8"/>
-  
-  <!-- Minik tahrir tohumları / çini zemin noktaları -->
-  <circle cx="85" cy="54" r="1.8" fill="#C8232C"/>
-  <circle cx="85" cy="64" r="1.5" fill="#C8232C"/>
-  <circle cx="27" cy="91" r="1.5" fill="#1C3D5A"/>
-</svg>
+          <!-- "T" Harfi: Mercan Kırmızısı Çini Lalesi & Tahrirli Gövde -->
+          <path d="M85 88C84 75 84 55 85 40" stroke="#1C3D5A" stroke-width="3" stroke-linecap="round"/>
+          <!-- Lale Taç Yaprakları (T'nin Yatay Kolu) -->
+          <path d="M84 44C78 43 66 42 62 36C59 32 63 28 68 29C74 31 80 37 84 43Z" fill="#C8232C" stroke="#8E141A" stroke-width="0.8"/>
+          <path d="M86 44C92 43 104 42 108 36C111 32 107 28 102 29C96 31 90 37 86 43Z" fill="#C8232C" stroke="#8E141A" stroke-width="0.8"/>
+          <!-- Klasik Hançer Sivri Lale Ucu -->
+          <path d="M81 43C82 35 84 22 85 18C86 22 88 35 89 43C86 45 84 45 81 43Z" fill="#C8232C" stroke="#8E141A" stroke-width="0.8"/>
+          
+          <circle cx="85" cy="54" r="1.8" fill="#C8232C"/>
+          <circle cx="85" cy="64" r="1.5" fill="#C8232C"/>
+          <circle cx="27" cy="91" r="1.5" fill="#1C3D5A"/>
+        </svg>
       </div>
+
+      <!-- Amblemin Yanında Yer Alan İsim ve Bilgi Alanı -->
+      <div class="brand-text">
+        <h1>NICAEA <span class="brand-red">TILES</span></h1>
+        <p id="olcuBilgiText">Zemin: Yuvarlak Tabak — 22 cm</p>
+      </div>
+    </div>
 
     <div class="header-actions">
       <button class="btn btn-secondary" onclick="canvas.clear(); cizZemin();">Temizle</button>
